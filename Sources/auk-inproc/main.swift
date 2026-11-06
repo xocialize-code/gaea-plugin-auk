@@ -83,7 +83,7 @@ case "separate":
     let response = try await run(separation) as! AudioSeparationResponse
     let dir = URL(fileURLWithPath: option("--out-dir") ?? ".", isDirectory: true)
     try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-    _ = try AudioSeparations.outputs(response, stems: made, outputDir: dir)
+    _ = try AudioSeparations.outputs(response, stems: made, mixture: mixture, outputDir: dir)
     result["stems"] = made
 default:
     let plan = try speakPlan(text: option("--text") ?? "Gaea speaks. This sentence came from a signed plugin, over its own protocol.",

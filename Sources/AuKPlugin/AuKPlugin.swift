@@ -286,13 +286,15 @@ func separateOperation(_ v: Variant) -> EngineOperation {
         for stem in asked where !stems(v).contains(stem) {
             throw SpeechEdits.refusal("\(title(v)) doesn't make the \(stem) stem.", param: "stems", mesCode: "unsupported_parameter")
         }
-        let separation = try AudioSeparations.request(mixture: try Data(contentsOf: mixtureURL), params: job.params,
+        let mixture = try Data(contentsOf: mixtureURL)
+        let separation = try AudioSeparations.request(mixture: mixture, params: job.params,
                                                       metaData: ["seed": .int(Int(seed))])
         guard let response = try await session.run(separation) as? AudioSeparationResponse else {
             throw GPPError(.modelError, "AuK returned no stems.")
         }
         let made = separation.stems.map(\.rawValue)
-        let outputs = try AudioSeparations.outputs(response, stems: made, outputDir: session.outputDir)
+        // AuK works in 20 ms frames, so its stems come out up to a frame short: the kit fits each to the mixture (§3.6).
+        let outputs = try AudioSeparations.outputs(response, stems: made, mixture: mixture, outputDir: session.outputDir)
         var effective: [String: JSONValue] = ["seed": .int(Int64(seed)), "stems": .array(made.map { .string($0) })]
         if let speaker = job.param("speaker") { effective["speaker"] = speaker }
         return RunResult(outputs: outputs, effective: effective)
@@ -355,7 +357,7 @@ func offers(_ v: Variant) -> [PluginManifest.Offer] {
 }
 
 public let aukPlugin = GaeaPluginDefinition(
-    id: "com.xocialize.gaea.auk", version: "0.1.0", minGaea: "1.1.0", team: "CFZS6RXUCP",
+    id: "com.xocialize.gaea.auk", version: "0.1.1", minGaea: "1.1.1", team: "CFZS6RXUCP",
     repo: "https://github.com/xocialize-code/gaea-plugin-auk", title: "AuK",
     summary: "AuK and AuK-Flash (Tencent Hunyuan): cloned and designed speech, 14 kinds of speech edit with no transcript needed, and voice separation, in English and Chinese. Research use only.",
     license: "Apache-2.0", executable: "gaea-auk-worker",
