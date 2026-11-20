@@ -357,7 +357,7 @@ func offers(_ v: Variant) -> [PluginManifest.Offer] {
 }
 
 public let aukPlugin = GaeaPluginDefinition(
-    id: "com.xocialize.gaea.auk", version: "0.1.1", minGaea: "1.1.1", team: "CFZS6RXUCP",
+    id: "com.xocialize.gaea.auk", version: "0.1.2", minGaea: "1.1.1", team: "CFZS6RXUCP",
     repo: "https://github.com/xocialize-code/gaea-plugin-auk", title: "AuK",
     summary: "AuK and AuK-Flash (Tencent Hunyuan): cloned and designed speech, 14 kinds of speech edit with no transcript needed, and voice separation, in English and Chinese. Research use only.",
     license: "Apache-2.0", executable: "gaea-auk-worker",
